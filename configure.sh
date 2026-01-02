@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./configure --build=i686-pc-linux-gnu CC="gcc -m32 -g" TARGET_CC="gcc -m32 -b i686-pc-linux-gnu" TARGET_CFLAGS=" -m32 -g -march=i686"
