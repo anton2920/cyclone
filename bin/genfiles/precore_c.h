@@ -3,11 +3,11 @@
 #ifndef _CYC_INCLUDE_H_
 #define _CYC_INCLUDE_H_
 
-/* Need one of these per thread (see runtime_stack.c). The runtime maintains 
+/* Need one of these per thread (see runtime_stack.c). The runtime maintains
    a stack that contains either _handler_cons structs or _RegionHandle structs.
    The tag is 0 for a handler_cons and 1 for a region handle.  */
 struct _RuntimeStack {
-  int tag; 
+  int tag;
   struct _RuntimeStack *next;
   void (*cleanup)(struct _RuntimeStack *frame);
 };
@@ -19,14 +19,14 @@ struct _RuntimeStack {
 
 /* Fat pointers */
 struct _fat_ptr {
-  unsigned char *curr; 
-  unsigned char *base; 
-  unsigned char *last_plus_one; 
-};  
+  unsigned char *curr;
+  unsigned char *base;
+  unsigned char *last_plus_one;
+};
 
 /* Regions */
 struct _RegionPage
-{ 
+{
 #ifdef CYC_REGION_PROFILE
   unsigned total_bytes;
   unsigned free_bytes;
@@ -44,7 +44,7 @@ struct _RegionHandle {
   struct _RegionPage *curr;
 #if(defined(__linux__) && defined(__KERNEL__))
   struct _RegionPage *vpage;
-#endif 
+#endif
   struct _RegionAllocFunctions *fcns;
   char               *offset;
   char               *last_plus_one;
@@ -101,6 +101,7 @@ void* _rethrow(void*);
 #define _throw_match() (_throw_match_fn(__FILE__,__LINE__))
 #define _throw_assert() (_throw_assert_fn(__FILE__,__LINE__))
 #define _throw(e) (_throw_fn((e),__FILE__,__LINE__))
+#define throw _throw
 #endif
 
 void* Cyc_Core_get_exn_thrown();
@@ -276,7 +277,7 @@ void* _bounded_GC_calloc_atomic(unsigned,unsigned,const char*,int);
 #endif
 
 static inline unsigned int _check_times(unsigned x, unsigned y) {
-  unsigned long long whole_ans = 
+  unsigned long long whole_ans =
     ((unsigned long long) x)*((unsigned long long)y);
   unsigned word_ans = (unsigned)whole_ans;
   if(word_ans < whole_ans || word_ans > MAX_MALLOC_SIZE)
@@ -291,25 +292,25 @@ static inline unsigned int _check_times(unsigned x, unsigned y) {
 extern int rgn_total_bytes;
 #endif
 
-static inline void*_fast_region_malloc(struct _RegionHandle*r, _AliasQualHandle_t aq, unsigned orig_s) {  
-  if (r > (struct _RegionHandle*)_CYC_MAX_REGION_CONST && r->curr != 0) { 
+static inline void*_fast_region_malloc(struct _RegionHandle*r, _AliasQualHandle_t aq, unsigned orig_s) {
+  if (r > (struct _RegionHandle*)_CYC_MAX_REGION_CONST && r->curr != 0) {
 #ifdef CYC_NOALIGN
     unsigned s =  orig_s;
 #else
-    unsigned s =  (orig_s + _CYC_MIN_ALIGNMENT - 1) & (~(_CYC_MIN_ALIGNMENT -1)); 
+    unsigned s =  (orig_s + _CYC_MIN_ALIGNMENT - 1) & (~(_CYC_MIN_ALIGNMENT -1));
 #endif
-    char *result; 
-    result = r->offset; 
+    char *result;
+    result = r->offset;
     if (s <= (r->last_plus_one - result)) {
-      r->offset = result + s; 
+      r->offset = result + s;
 #ifdef CYC_REGION_PROFILE
     r->curr->free_bytes = r->curr->free_bytes - s;
     rgn_total_bytes += s;
 #endif
       return result;
     }
-  } 
-  return _region_malloc(r,aq,orig_s); 
+  }
+  return _region_malloc(r,aq,orig_s);
 }
 
 //doesn't make sense to fast malloc with reaps

@@ -66,7 +66,7 @@ cycstub {
 }
 cstub {
   #include <sys/types.h>
-  #if defined(__APPLE__) 
+  #if defined(__APPLE__)
   #include <netinet/in.h>
   #include <stdint.h>
   #endif
@@ -427,7 +427,7 @@ hstub opendir {
   //
   // We define DIR as an abstract struct because it can contain
   // pointers, e.g., in cygwin
-  extern struct __cycDIR;  
+  extern struct __cycDIR;
   typedef struct __cycDIR DIR;
 }
 hstub opendir {
@@ -960,7 +960,7 @@ struct group
     char @gr_passwd;		/* Password.	*/
     gid_t gr_gid;		/* Group ID.	*/
     char ** @zeroterm gr_mem;	/* Member list.	*/
-  };  
+  };
 }
 }
 hstub initgroups {
@@ -1303,7 +1303,7 @@ math_errhandling
 hstub {
   /* I'd like to do
      include { HUGE_VAL }
-     but under Cygwin this brings in 
+     but under Cygwin this brings in
      extern const union __dmath  __attribute__((dllimport))__infinity[];
      which does not have an array size.
      Works fine in Linux, though.
@@ -1864,8 +1864,8 @@ mqueue.h:
 
 // Defines a structure containing a void *
 // Not supported yet
-ndbm.h:
-;
+//ndbm.h:
+//;
 
 // Defines a structure containing a char *
 // Not supported yet
@@ -1896,7 +1896,7 @@ hstub {
 hstub {
   // FIX:  Need to put in by hand so that we can translate
   // to struct in_addr, rather than the prescribed char *.
-  // We thus bake in the fact that addresses are 4 bytes long; 
+  // We thus bake in the fact that addresses are 4 bytes long;
   // i.e. that the length is assumed to be 4.  If this is not
   // the case, then we are in trouble.
   struct hostent {
@@ -2209,7 +2209,7 @@ hstub getpwuid {
 // Our parser dies on it in Linux
 // Uses strings extensively, probably best to rewrite in Cyclone
 // Not supported yet
-regexp.h:
+regex.h:
 ;
 
 // Real time
@@ -2312,7 +2312,7 @@ hstub raise {
   extern "C" int raise(int);
 }
 hstub sigaddset {
-  extern "C" int sigaddset(sigset_t@, int);  
+  extern "C" int sigaddset(sigset_t@, int);
 }
 hstub sigdelset {
   extern "C" int sigdelset(sigset_t@, int);
@@ -2383,7 +2383,7 @@ cstub {
   #ifdef SIG_HOLD
   void Cyc_SIG_HOLD(int ignore) { return; }
   #endif
- 
+
   // This takes a C sighandler_t and turns it into a Cyclone sigarg_t
   Cyc_sigarg_t sigarg_wrap(void (*f)(int)) {
     if (f == SIG_DFL)  return Cyc_SIG_DFL;
@@ -2631,7 +2631,7 @@ hstub {
   // va_list is not defined because Cyclone has safe varargs.
 }
 hstub {
-  extern struct __cycFILE;  
+  extern struct __cycFILE;
   // Be sure to use _def_ so we don't interfere with cycboot.h
 #ifndef _FILE_def_
 #define _FILE_def_
@@ -2812,12 +2812,12 @@ cycstub fgets {
     char * @nozeroterm`r result;
     char * @nozeroterm buffer = (char * @nozeroterm)s;
     unsigned int len = numelts(s);
-    if (len < n) throw &__fgets_failure_2; 
+    if (len < n) throw &__fgets_failure_2;
     // n = (len < n) ? len : n;
     result = Cstdio::fgets(buffer, n, f->file);
-    if (result == NULL) 
+    if (result == NULL)
       return NULL;
-    else 
+    else
       return s;
   }
 }
@@ -2909,7 +2909,7 @@ hstub freopen {
 }
 cycstub freopen {
   namespace Cstdio {
-    extern "C" __cFILE *`H freopen(const char *, const char @, 
+    extern "C" __cFILE *`H freopen(const char *, const char @,
 				   __cFILE @`H);
   }
   FILE *`r r_freopen(region_t<`r> r, const char * filename, const char @modes, FILE @`r f) {
@@ -2940,7 +2940,7 @@ hstub {
   };
   // Be sure to use _def_ so we don't interfere with cycboot.h
 #ifndef _sarg_t_def_
-#define _sarg_t_def_ 
+#define _sarg_t_def_
   typedef datatype ScanfArg<`r1> @`r2 sarg_t<`r1,`r2>;
 #endif
 }
@@ -3065,7 +3065,7 @@ cycstub fwrite {
   static datatype exn.Failure __fwrite_failure_2 =
     Failure("fwrite: buffer insufficient");
   size_t fwrite(const char ? @nozeroterm`r ptr, size_t size, size_t nmemb, FILE @f) {
-    if (!ptr) { throw &__fwrite_failure_1; } 
+    if (!ptr) { throw &__fwrite_failure_1; }
     else {
       if (size * nmemb > numelts(ptr)) throw &__fwrite_failure_2;
       return Cstdio::fwrite((const char @ @nozeroterm)ptr, size, nmemb, f->file);
@@ -3315,7 +3315,7 @@ hstub tmpnam {
 }
 cycstub tmpnam {
 // currently defined in tmp.cyc
-//  extern char ?`r strcpy(char ?`r,const char ?); 
+//  extern char ?`r strcpy(char ?`r,const char ?);
 //  // Instead of putting this in the stub file, we should just
 //  // have a separate file for it.  That way the linker can leave
 //  // it out if it isn't used, preventing a warning about the
@@ -3364,7 +3364,7 @@ hstub vscanf {
   //  extern int vscanf(const char *restrict, va_list);
 }
 hstub vsnprintf {
-  extern int vsnprintf(char ? @nozeroterm, size_t, const char ?, parg_t ?) 
+  extern int vsnprintf(char ? @nozeroterm, size_t, const char ?, parg_t ?)
     __attribute__((format(printf,3,0)))
     ;
 }
@@ -3426,9 +3426,9 @@ hstub {
   //  extern void file_length(const char ?);
 
   // these two provided in c stubs
-  extern int file_string_read(FILE @, char ?dest, int dest_offset, 
+  extern int file_string_read(FILE @, char ?dest, int dest_offset,
                               int max_count);
-  extern int file_string_write(FILE @, const char ?src, int src_offset, 
+  extern int file_string_write(FILE @, const char ?src, int src_offset,
                                int max_count);
 }
 cstub {
@@ -3441,7 +3441,7 @@ cstub {
       throw(Cyc_Null_Exception); // FIX:  should be more descriptive?
     return sf->file;
   }
-  int Cyc_file_string_read(struct Cyc___cycFILE *sf, 
+  int Cyc_file_string_read(struct Cyc___cycFILE *sf,
                                  struct _fat_ptr dest,
                                  int dest_offset, int max_count) {
     unsigned char *new_curr = dest.curr + dest_offset;
@@ -3455,7 +3455,7 @@ cstub {
     }
     return fread(new_curr, 1, max_count, fd);
   }
-  int Cyc_file_string_write(struct Cyc___cycFILE *sf, 
+  int Cyc_file_string_write(struct Cyc___cycFILE *sf,
                                   struct _fat_ptr src,
                                   int src_offset, int max_count) {
     size_t sz = src.last_plus_one - src.curr;
@@ -3466,13 +3466,13 @@ cstub {
     if(src_offset + max_count > sz) {
       fprintf(stderr,"Attempt to write off end of string.\n");
       exit(255);
-    } 
+    }
     return fwrite(new_curr, 1, max_count, fd);
   }
 }
 cycstub {
-  datatype exn { 
-    FileOpenError(const char ?); 
+  datatype exn {
+    FileOpenError(const char ?);
     FileCloseError;
   };
 
@@ -3661,7 +3661,7 @@ cycstub {
     Failure("qsort called with NULL");
   static datatype exn.Failure __qsort_failure_2 =
     Failure("qsort called with insufficient array size");
-  void qsort(`a::A ? tab, size_t nmemb, tag_t<valueof_t(sizeof(`a))> szmemb, 
+  void qsort(`a::A ? tab, size_t nmemb, tag_t<valueof_t(sizeof(`a))> szmemb,
              int (@compar)(const `a @, const `a @)) {
     if (!tab) throw &__qsort_failure_1;
     if (numelts(tab) < nmemb) throw &__qsort_failure_2;
@@ -3717,12 +3717,12 @@ hstub unlockpt {
 // strings.h:
 // ;
 
-stropts.h:
-hstub {
+//stropts.h:
+//hstub {
   // FIX: stropts.h is not yet supported.
-  // The problem is that the strbuf structure has a char * field. 
-}
-;
+  // The problem is that the strbuf structure has a char * field.
+//}
+//;
 
 sys/dir.h:
 hstub {
@@ -3773,13 +3773,13 @@ uid_t
 gid_t
 mode_t
 key_t
-IPC_CREAT  
-IPC_EXCL   
-IPC_NOWAIT 
+IPC_CREAT
+IPC_EXCL
+IPC_NOWAIT
 IPC_PRIVATE
-IPC_RMID   
-IPC_SET    
-IPC_STAT   
+IPC_RMID
+IPC_SET
+IPC_STAT
 }
 hstub ftok {
   extern "C" key_t ftok(const char @, int);
@@ -3814,8 +3814,8 @@ hstub {
 
   // The traditional first arg to mmap should be 0 anyway, so don't
   // even bother to pass it to us.
-  extern char ? @nozeroterm mmap(char ? @nozeroterm, size_t length, 
-	                         int prot, int flags, 
+  extern char ? @nozeroterm mmap(char ? @nozeroterm, size_t length,
+	                         int prot, int flags,
 		                 int fd, off_t offset);
 
   extern int munmap(const char ? @nozeroterm start, size_t length);
@@ -3831,11 +3831,11 @@ cycstub mmap {
   static datatype exn.Failure __mmap_failure =
     Failure("mmap called with illegal start/prot/flags");
   char ? @nozeroterm mmap(char ? @nozeroterm ignored,
-			  size_t length, int prot, 
+			  size_t length, int prot,
 		          int flags, int fd, off_t offset) {
     if (prot == PROT_EXEC ||
         ((flags & MAP_PRIVATE) && (flags & MAP_SHARED))
-#if defined(__linux__)	
+#if defined(__linux__)
     || (flags & MAP_GROWSDOWN)
 #endif
 	)
@@ -4355,7 +4355,7 @@ cstub recv {
   ssize_t recv_wrapped(int a, struct _fat_ptr b, size_t c, int d) {
     // JGM: -- it's okay to pass in NULL if c == 0
     char *p = b.curr;  // _check_fat_subscript(b,1,0);
-    unsigned n = _get_fat_size(b,1);  
+    unsigned n = _get_fat_size(b,1);
     if (n<c) _throw_arraybounds();
     return recv(a,p,c,d);
   }
@@ -4369,7 +4369,7 @@ cycstub recvfrom {
     extern "C" ssize_t recvfrom_in(int, char ? @nozeroterm, size_t, int,
                                    const struct sockaddr_in @, socklen_t @);
   }
-  ssize_t recvfrom(int fd, char ? @nozeroterm buf, size_t n, int flags, 
+  ssize_t recvfrom(int fd, char ? @nozeroterm buf, size_t n, int flags,
 		   ... inject SA ap) {
     if (numelts(ap) != 2) throw &SocketError_val;
     switch ($(ap[0],ap[1])) {
@@ -4384,7 +4384,7 @@ cstub recvfrom {
                       const struct sockaddr_in *e, socklen_t *f) {
     // JGM: -- it's okay to pass in NULL if c == 0
     char *p = b.curr; // _check_fat_subscript(b,1,0);
-    unsigned n = _get_fat_size(b,1);  
+    unsigned n = _get_fat_size(b,1);
     if (n<c) _throw_arraybounds();
     return recvfrom(a,p,c,d,(struct sockaddr *)e,f);
   }
@@ -4404,7 +4404,7 @@ cstub send {
   ssize_t send_wrapped(int a, struct _fat_ptr b, size_t c, int d) {
     // JGM: -- it's okay to pass in NULL if c == 0
     char *p = b.curr; // _check_fat_subscript(b,1,0);
-    unsigned n = _get_fat_size(b,1);  
+    unsigned n = _get_fat_size(b,1);
     if (n<c) _throw_arraybounds();
     return send(a,p,c,d);
   }
@@ -4433,7 +4433,7 @@ cstub sendto {
                     const struct sockaddr_in *e, socklen_t f) {
     // JGM: -- it's okay to pass in NULL if c == 0
     char *p = b.curr; // _check_fat_subscript(b,1,0);
-    unsigned n = _get_fat_size(b,1);  
+    unsigned n = _get_fat_size(b,1);
     if (n<c) _throw_arraybounds();
     return sendto(a,p,c,d,(struct sockaddr *)e,f);
   }
@@ -4900,31 +4900,31 @@ cycstub syslog {
 
 tar.h:
 include {
-TMAGIC     
-TMAGLEN    
-TVERSION   
-TVERSLEN   
-REGTYPE    
-AREGTYPE   
-LNKTYPE    
-SYMTYPE    
-CHRTYPE    
-BLKTYPE    
-DIRTYPE    
-FIFOTYPE   
-CONTTYPE   
-TSUID      
+TMAGIC
+TMAGLEN
+TVERSION
+TVERSLEN
+REGTYPE
+AREGTYPE
+LNKTYPE
+SYMTYPE
+CHRTYPE
+BLKTYPE
+DIRTYPE
+FIFOTYPE
+CONTTYPE
+TSUID
 TSGID
 TSVTX
 TUREAD
 TUWRITE
-TUEXEC     
-TGREAD     
-TGWRITE    
-TGEXEC     
-TOREAD     
-TOWRITE    
-TOEXEC     
+TUEXEC
+TGREAD
+TGWRITE
+TGEXEC
+TOREAD
+TOWRITE
+TOEXEC
 }
 ;
 
@@ -5050,7 +5050,7 @@ cycstub strftime {
     Failure("fgets: buffer insufficient");
   size_t strftime(char ?s, size_t maxsize, const char ?fmt,
                   const struct tm @t) {
-    if (maxsize > numelts(s)) throw &__strftime_failure; 
+    if (maxsize > numelts(s)) throw &__strftime_failure;
     return Ctime::strftime(s,maxsize,fmt,t);
   }
 }
@@ -5482,8 +5482,8 @@ cycstub execlp {
   int execlp(const char @ path, const char @`r arg0, ... const char *`r argv) {
     if (argv[numelts(argv) - 1] != NULL) throw &__execlp_failure;
     // We allocate 1+numelts(argv) because we need to prepend arg0
-    { region r2; 
-      const char *`r ? @zeroterm newargs = 
+    { region r2;
+      const char *`r ? @zeroterm newargs =
         rnew(r2) {for i < numelts(argv) : (const char *`r)NULL};
       newargs[0] = arg0;
       for (int i = 0; i < numelts(argv)-1; i++)
@@ -5504,7 +5504,7 @@ cycstub execv {
 hstub execve {
   // FIX: what did I lose by removing the const from this spec?
   //  extern int execve(const char ?, const char ? const ?, const char ? const ?);
-    extern "C" int execve(const char @ path, 
+    extern "C" int execve(const char @ path,
 			  char *@aqual(`q\T) `r::E* @zeroterm argv, char *@aqual(`q2\T) `r2::E* @zeroterm envp);
     //    extern int execve(const char ?, char ? const ?, char ? const ?);
 }

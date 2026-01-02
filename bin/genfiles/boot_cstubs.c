@@ -23,6 +23,7 @@
   #include "precore_c.h"
 
   #include <stdio.h>
+  #include <stdlib.h>
 
 extern struct Cyc___cycFILE { // must match defn in runtime_cyc.c
   FILE *file;
@@ -40,7 +41,7 @@ static struct Cyc_Null_Exception_exn_struct exn_val = {Cyc_Null_Exception};
       throw(&exn_val); // FIX:  should be more descriptive?
     return sf->file;
   }
-  int Cyc_file_string_read(struct Cyc___cycFILE *sf, 
+  int Cyc_file_string_read(struct Cyc___cycFILE *sf,
                                  struct _fat_ptr dest,
                                  int dest_offset, int max_count) {
     unsigned char *new_curr = dest.curr + dest_offset;
@@ -54,7 +55,7 @@ static struct Cyc_Null_Exception_exn_struct exn_val = {Cyc_Null_Exception};
     }
     return fread(new_curr, 1, max_count, fd);
   }
-  int Cyc_file_string_write(struct Cyc___cycFILE *sf, 
+  int Cyc_file_string_write(struct Cyc___cycFILE *sf,
                                   struct _fat_ptr src,
                                   int src_offset, int max_count) {
     size_t sz = src.last_plus_one - src.curr;
@@ -65,7 +66,7 @@ static struct Cyc_Null_Exception_exn_struct exn_val = {Cyc_Null_Exception};
     if(src_offset + max_count > sz) {
       fprintf(stderr,"Attempt to write off end of string.\n");
       exit(255);
-    } 
+    }
     return fwrite(new_curr, 1, max_count, fd);
   }
 

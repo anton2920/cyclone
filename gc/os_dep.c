@@ -16,6 +16,17 @@
 
 #include "private/gc_priv.h"
 
+#if defined(NEED_FIND_LIMIT) \
+     || (defined(USE_PROC_FOR_LIBRARIES) && defined(THREADS))
+  JMP_BUF GC_jmp_buf;
+
+  /* Set up a handler for address faults which will longjmp to  */
+  /* GC_jmp_buf.                                                */
+  GC_INNER void GC_setup_temporary_fault_handler(void);
+  /* Undo the effect of GC_setup_temporary_fault_handler.       */
+  GC_INNER void GC_reset_fault_handler(void);
+#endif /* NEED_FIND_LIMIT || USE_PROC_FOR_LIBRARIES */
+
 #if defined(LINUX) && !defined(POWERPC)
 # include <linux/version.h>
 # if (LINUX_VERSION_CODE <= 0x10400)

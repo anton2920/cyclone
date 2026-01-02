@@ -20,6 +20,7 @@
 // Cyclone to C translator
 
 #include <stdio.h>
+#include <string.h>
 #include "runtime_internal.h"
 
 /* struct _fat_ptr Cstring_to_string(Cstring s) { */

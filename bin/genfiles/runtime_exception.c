@@ -19,6 +19,7 @@
 /* This part of the runtime system implements exceptions. */
 
 #include "runtime_internal.h"
+#include <stdlib.h>
 
 // FIX: makes alignment and pointer-size assumptions
 char Cyc_Null_Exception[] = "Cyc_Null_Exception";
@@ -67,7 +68,7 @@ void _init_exceptions() {
 // create a new handler, put it on the stack, and return it so its
 // jmp_buf can be filled in by the caller
 void _push_handler(struct _handler_cons * new_handler) {
-  //errprintf("pushing handler %x\n",(unsigned int)new_handler);  
+  //errprintf("pushing handler %x\n",(unsigned int)new_handler);
   new_handler->s.tag = EXCEPTION_HANDLER;
   new_handler->s.cleanup = NULL;
   _push_frame((struct _RuntimeStack *)new_handler);
@@ -142,7 +143,7 @@ void Cyc_Core_set_uncaught_exn_fun(int f()) {
 
 // Called by main to set the topmost exception handler
 void _set_top_handler() {
-  // We can't put these on the stack since they be blown away on 
+  // We can't put these on the stack since they be blown away on
   // the initial return from this function.
   static int status = 0;
   static char *exn_name;
@@ -173,7 +174,7 @@ void* _throw_fn(void* e, const char *filename, unsigned lineno) {
   put_tlocal(_exn_lineno_key, (void *)lineno);
 #elif defined(USE_CYC_TLS)
   tls_record_t *rec = cyc_runtime_lookup_tls_record();
-  if(!rec) { 
+  if(!rec) {
     errquit("cyc_runtime module failed to return thread local slot -- fatal");
     return 0;
   }
@@ -181,9 +182,9 @@ void* _throw_fn(void* e, const char *filename, unsigned lineno) {
   rec->exn_filename = filename;
   rec->exn_lineno = lineno;
 #else
-  _exn_thrown = e; 
+  _exn_thrown = e;
   _exn_filename = filename;
-  _exn_lineno = lineno; 
+  _exn_lineno = lineno;
 #endif
   if (my_handler->handler == top_handler.handler && !in_uncaught_fun) {
     in_uncaught_fun = 1;

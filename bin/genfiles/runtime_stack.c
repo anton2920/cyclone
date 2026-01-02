@@ -19,6 +19,7 @@
 // This is implements the stack used by exceptions and lexical regions.
 
 #include "runtime_internal.h"
+#include <stdlib.h>
 
 #ifdef HAVE_THREADS
 static tlocal_key_t _current_frame_key;
@@ -36,13 +37,13 @@ void _init_stack() {
 
 struct _RuntimeStack *get_current_frame() {
 #ifdef HAVE_THREADS
-  return (struct _RuntimeStack *)get_tlocal(_current_frame_key); 
+  return (struct _RuntimeStack *)get_tlocal(_current_frame_key);
 #elif defined(USE_CYC_TLS)
   tls_record_t *rec = cyc_runtime_lookup_tls_record();
-  if(rec) 
+  if(rec)
     return rec->current_frame;
   errquit("cyc_runtime module failed to return thread local slot -- fatal");
-  return 0;   
+  return 0;
 #else
   return _current_frame;
 #endif
@@ -53,7 +54,7 @@ void set_current_frame(struct _RuntimeStack *frame) {
   put_tlocal(_current_frame_key, frame);
 #elif defined(USE_CYC_TLS)
   tls_record_t *rec = cyc_runtime_lookup_tls_record();
-  if(rec) 
+  if(rec)
     rec->current_frame = frame;
   else
     errquit("cyc_runtime module failed to return thread local slot -- fatal");
@@ -75,8 +76,8 @@ void _npop_frame(unsigned int n) {
     struct _RuntimeStack *current_frame = get_current_frame();
     if(current_frame == NULL) {
       errquit("internal error: empty frame stack\n");
-    } 
-    if (current_frame->cleanup != NULL) 
+    }
+    if (current_frame->cleanup != NULL)
       current_frame->cleanup(current_frame);
     current_frame = current_frame->next;
     set_current_frame(current_frame);

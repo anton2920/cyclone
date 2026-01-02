@@ -2378,7 +2378,7 @@ GC_INNER void *GC_store_debug_info_inner(void *p, word sz, const char *str,
 
 #if defined(NEED_FIND_LIMIT) \
      || (defined(USE_PROC_FOR_LIBRARIES) && defined(THREADS))
-  JMP_BUF GC_jmp_buf;
+  extern JMP_BUF GC_jmp_buf;
 
   /* Set up a handler for address faults which will longjmp to  */
   /* GC_jmp_buf.                                                */
