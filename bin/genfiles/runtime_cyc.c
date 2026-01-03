@@ -86,6 +86,11 @@ extern char *_set_top_handler(); // defined in runtime_exception.c
 /* } */
 /* #endif */
 
+/* NOTE(anton2920): for inlined '_set_top_handler'. */
+#include <stdlib.h>
+int Cyc_Core_get_exn_lineno(void);
+const char *Cyc_Core_get_exn_filename(void);
+
 extern void GC_init();
 int main(int argc, char **argv) {
   GC_init();
@@ -96,8 +101,30 @@ int main(int argc, char **argv) {
   // because we won't have multiple main() threads
   _init_stack();
   _init_exceptions();
+
   // install outermost exception handler
-  _set_top_handler();
+  //_set_top_handler();
+  /* NOTE(anton2920): this is inlined '_set_top_handler()' because it's undefined behaviour to return from function which called 'setjmp' before 'longjmp' was called. */
+  // We can't put these on the stack since they be blown away on
+  // the initial return from this function.
+  static int status_ = 0;
+  static char *exn_name;
+  static void*exn_thrown;
+  static const char *exn_filename;
+  static int exn_lineno;
+  extern struct _handler_cons top_handler;
+
+  if (setjmp(top_handler.handler)) status_ = 1;
+  if (status_) {
+    exn_thrown = Cyc_Core_get_exn_thrown();
+    exn_filename = Cyc_Core_get_exn_filename();
+    exn_lineno = Cyc_Core_get_exn_lineno();
+    exn_name = *(char**)exn_thrown;
+    errquit("Uncaught exception %s thrown from around %s:%d\n",exn_name,
+	    exn_filename,exn_lineno);
+  }
+  _push_handler(&top_handler);
+ 
   // set standard file descriptors
   Cyc_stdin->file  = stdin;
   Cyc_stdout->file = stdout;

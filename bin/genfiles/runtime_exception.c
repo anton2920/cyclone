@@ -142,6 +142,7 @@ void Cyc_Core_set_uncaught_exn_fun(int f()) {
 }
 
 // Called by main to set the topmost exception handler
+/*
 void _set_top_handler() {
   // We can't put these on the stack since they be blown away on
   // the initial return from this function.
@@ -162,6 +163,7 @@ void _set_top_handler() {
   }
   _push_handler(&top_handler);
 }
+*/
 
 void* _throw_fn(void* e, const char *filename, unsigned lineno) {
   struct _handler_cons *my_handler;
